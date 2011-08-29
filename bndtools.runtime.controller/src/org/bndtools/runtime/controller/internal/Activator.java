@@ -11,6 +11,11 @@ public class Activator implements BundleActivator {
 
     private static final int DEFAULT_NANO_PORT = 2604;
 	private static final String PROP_NANO_PORT = "bndtools.runtime.controller.nanoPort";
+	
+	/**
+	 * If enabled, this will cause the runtime controller to use an existing HTTP Service rather than the internal server.
+	 */
+	private static final String PROP_USE_HTTP_SERVICE = "bndtools.runtime.controller.useHttpService";
     
     // Handler Prefixes
     private static final String PREFIX_BUNDLES = "bundles";
@@ -35,13 +40,20 @@ public class Activator implements BundleActivator {
 		}
 
 		// Setup the server
-		String nanoPortStr = context.getProperty(PROP_NANO_PORT);
-		if (nanoPortStr != null) {
-			int nanoPort = Integer.parseInt(nanoPortStr);
-			server = new NanoServer(nanoPort, log);
+		IServer server = null;
+		if (context.getProperty(PROP_USE_HTTP_SERVICE) != null) {
+			// HttpService server
+		    server = new HttpServiceServer(context, log);
 		} else {
-			server = new NanoServer(DEFAULT_NANO_PORT, log);
-		} // TODO: additional server types e.g. HttpServic
+			// NanoServer server
+    		String nanoPortStr = context.getProperty(PROP_NANO_PORT);
+    		if (nanoPortStr != null) {
+    			int nanoPort = Integer.parseInt(nanoPortStr);
+    			server = new NanoServer(nanoPort, log);
+    		} else {
+    			server = new NanoServer(DEFAULT_NANO_PORT, log);
+    		} 
+		}
 
         server.registerHandler(PREFIX_BUNDLES, new BundlesHandler(context, log));
         server.registerHandler(PREFIX_PACKAGES, new PackagesHandler(context, pkgAdminTracker));

@@ -10,5 +10,8 @@ Private-Package: org.bndtools.runtime.controller.internal
 -runfw: org.apache.felix.framework
 Export-Package: org.bndtools.runtime.controller
 Import-Package: org.osgi.service.log;resolution:=optional,\
+ org.osgi.service.http;resolution:=optional,\
+ javax.servlet;resolution:=optional,\
+ javax.servlet.http;resolution:=optional,\
 	*
-Bundle-Version: 0.0.1
+Bundle-Version: 0.0.2
